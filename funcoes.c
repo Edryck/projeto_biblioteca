@@ -87,7 +87,7 @@ void menu_login(struct cadastro info[], struct livro info_livro[], int usuarios,
             system("cls");
             menu_admin(info, info_livro, usuarios, livros);
         // Se não for a senha correta, volta para o menu de login
-        } else if (strcmp(senha, "sthampiz") != 0){
+        } else {
             printf("Senha incorreta!\n");
             printf("Voce sera redirecionado para o menu de login!\n");
             getchar();
@@ -128,7 +128,7 @@ void menu_login(struct cadastro info[], struct livro info_livro[], int usuarios,
             if (usuario_encontrado == 0) {
             printf("Usuario nao encontrado!\n");
             printf("-----------------------------------------\n");
-            printf("Em caso de nao ter cadastro no sistema\nentre em contato com o administrador\npara realizar seu cadastro.\n");
+            printf("Em caso de nao ter cadastro no sistema\n    entre em contato com o administrador\npara realizar seu cadastro.\n");
             printf("-----------------------------------------\n");
             getchar();
             printf("Tecle ENTER para voltar a Tela de Inicio...");
@@ -266,45 +266,69 @@ void cadastrar_usuario(struct cadastro info[], struct livro info_livro[], int us
     printf("                                         \n");
     printf("-----------------------------------------\n");
     // Confere se o nome do usuário já existe
-    do {
-        usuario_existe = 0; // Assume que o usuário não existe
-        printf("Digite o seu nome de usuario:\n ");
+    printf("Deseja cadastrar um novo usuario ou reativar\num usuario inativo?\nDigite: [1] para cadastrar\n\t[2] para reativar\n");
+    char opcao;
+    scanf(" %c", &opcao);
+    if (opcao == '1') {
+        do {
+            usuario_existe = 0; // Assume que o usuário não existe
+            printf("Digite o seu nome de usuario:\n ");
+            scanf("%s", novo_usuario);
+            // Verificar se o nome de usuário já existe
+            for (int i = 0; i < usuarios; i++) {
+                if (strcmp(info[i].usuario, novo_usuario) == 0) {
+                    usuario_existe = 1; // Usuário já existe
+                    break;
+                }
+            }
+            if (usuario_existe) {
+                printf("Usuario ja existe! Tente outro nome.\n");
+            }
+        } while (usuario_existe);
+        strcpy(info[usuarios].usuario, novo_usuario);
+        // Define a senha para o usuário
+        do {
+            printf("Defina uma senha:\n ");
+            scanf("%s", info[usuarios].senha);
+            printf("Confirme a senha:\n ");
+            scanf("%s", info[usuarios].confirmacao);
+            if (strcmp(info[usuarios].senha, info[usuarios].confirmacao) != 0) {
+                printf("As senhas nao correspondem! Tente novamente.\n");
+            }
+        } while (strcmp(info[usuarios].senha, info[usuarios].confirmacao) != 0);
+        usuarios++;
+        strcpy(info[usuarios - 1].status, "Ativo");
+        printf("-----------------------------------------\n");
+        printf("\nUsuario cadastrado com sucesso!\n\n");
+        printf("Usuario: %s \n", info[usuarios - 1].usuario);
+        printf("Senha: %s \n", info[usuarios - 1].senha);
+        printf("Status atual: %s \n", info[usuarios - 1].status);
+        printf("-----------------------------------------\n");
+        getchar();
+        printf("\nTecle ENTER para voltar ao menu principal...");
+        getchar();
+        system("cls");
+        menu_admin(info, info_livro, usuarios, livros);
+    } else if (opcao == '2') {
+        printf("Digite o nome do usuario que deseja\nreativar: ");
         scanf("%s", novo_usuario);
-        // Verificar se o nome de usuário já existe
         for (int i = 0; i < usuarios; i++) {
-            if (strcmp(info[i].usuario, novo_usuario) == 0) {
-                usuario_existe = 1; // Usuário já existe
-                break;
+            if (strcmp(info[i].usuario, novo_usuario) == 0 && strcmp(info[i].status, "Inativo") == 0) {
+                strcpy(info[i].status, "Ativo");
+                printf("Usuario  reativado com sucesso!\n");
+                getchar();
+                printf("Tecle ENTER para voltar ao menu principal...");
+                getchar();
+                system("cls");
             }
         }
-        if (usuario_existe) {
-            printf("Usuario ja existe! Tente outro nome.\n");
-        }
-    } while (usuario_existe);
-    strcpy(info[usuarios].usuario, novo_usuario);
-    // Define a senha para o usuário
-    do {
-        printf("Defina uma senha:\n ");
-        scanf("%s", info[usuarios].senha);
-        printf("Confirme a senha:\n ");
-        scanf("%s", info[usuarios].confirmacao);
-        if (strcmp(info[usuarios].senha, info[usuarios].confirmacao) != 0) {
-            printf("As senhas nao correspondem! Tente novamente.\n");
-        }
-    } while (strcmp(info[usuarios].senha, info[usuarios].confirmacao) != 0);
-    usuarios++;
-    strcpy(info[usuarios - 1].status, "Ativo");
-    printf("-----------------------------------------\n");
-    printf("\nUsuario cadastrado com sucesso!\n\n");
-    printf("Usuario: %s \n", info[usuarios - 1].usuario);
-    printf("Senha: %s \n", info[usuarios - 1].senha);
-    printf("Status atual: %s \n", info[usuarios - 1].status);
-    printf("-----------------------------------------\n");
-    getchar();
-    printf("\nTecle ENTER para voltar ao menu principal...");
-    getchar();
-    system("cls");
-    menu_admin(info, info_livro, usuarios, livros);
+    } else {
+        printf("Opcao invalida!\n");
+        getchar();
+        printf("Tecle ENTER para voltar ao menu principal...");
+        getchar();
+        system("cls");
+    }
 }
 
 // Função para cadastrar livros
@@ -331,8 +355,7 @@ void cadastrar_livro(struct cadastro info[], struct livro info_livro[], int usua
                 livro_existe = 1; // Livro já existe
                 break;
             }
-        }
-        if (livro_existe) {
+        } if (livro_existe) {
             printf("Livro ja cadastrado!\n");
         }
     } while (livro_existe);
@@ -342,8 +365,7 @@ void cadastrar_livro(struct cadastro info[], struct livro info_livro[], int usua
         livro_existe = 0; // Inicia como livro inexistente
         // Adiciona titulo do livro
         printf("Digite o titulo do livro:\n ");
-        scanf(" %[^\n]s", titulo);
-
+        scanf("%s", titulo);
         // Verifica se o titulo do livro já existe
         for (int i = 0; i < livros; i++) {
             if (strcmp(info_livro[livros].titulo, novo_livro) == 0) {
@@ -355,7 +377,7 @@ void cadastrar_livro(struct cadastro info[], struct livro info_livro[], int usua
             printf("Livro ja cadastrado!\n");
         }
     } while (livro_existe);
-    strcpy(info_livro[livros].titulo, novo_livro);
+    strcpy(info_livro[livros].titulo, titulo);
     // Adiciona o nome do autor
     printf("Digite o nome do autor:\n ");
     scanf("%s", info_livro[livros].autor);
@@ -452,20 +474,38 @@ void excluir_usuario(struct cadastro info[], int usuarios) {
     printf("                                         \n");
     printf("=========================================\n");
     printf("                                         \n");
-    printf("           EXCLUSAO DE LIVROS            \n");
+    printf("           EXCLUSAO DE USUARIO           \n");
     printf("                                         \n");
     printf("-----------------------------------------\n");
-    printf("Digite o nome do usuario que deseja excluir: ");
+    printf("Digite o nome do usuario que deseja\nexcluir: ");
     scanf("%s", usuario);
     for (int i = 0; i < usuarios; i++) {
-        if (strcmp(info[i].usuario, usuario) == 0 && strcmp(info[i].usuario, "") != 0) {
-            usuario_encontrado = 1;
-            strcpy(info[i].status, "Inativo");
+        if (strcmp(usuario, "admin") == 0) {
+            printf("Nao e possivel excluir o usuario admin!\n");
+            printf("Tecle ENTER para voltar ao menu inicial...");
             getchar();
-            printf("Usuario excluido com sucesso!\n");
             getchar();
-            printf("Tecle ENTER para voltar ao manu inicial...");
             break;
+        } else if (strcmp(info[i].usuario, usuario) == 0 && strcmp(info[i].usuario, "") != 0) {
+            printf("Confirma a exclusao do usuario %s? (S/N): ", info[i].usuario);
+            char confirmacao;
+            scanf(" %c", &confirmacao);
+            if (confirmacao == 'S' || confirmacao == 's') {
+                usuario_encontrado = 1;
+                strcpy(info[i].status, "Inativo");
+                getchar();
+                printf("Usuario excluido com sucesso!\n");
+                getchar();
+                printf("Tecle ENTER para voltar ao menu inicial...");
+                break;
+            } else {
+                printf("Exclusao cancelada!\n");
+                printf("Tecle ENTER para voltar ao menu inicial...");
+                getchar();
+                getchar();
+                break;
+            }
+            
         }
     }
     if (usuario_encontrado == 0) {
