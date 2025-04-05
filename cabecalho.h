@@ -74,5 +74,7 @@ void listar_livros_emprestados(struct cadastro info[], struct livro info_livro[]
 void emprestar_livro(struct cadastro info[], struct livro info_livro[], int usuarios, int indice_usuario, int livros);
 // Função para devolver um livro
 void devolver_livro(struct cadastro info[], struct livro info_livro[], int usuarios, int indice_usuario, int livros);
+// Função para limpar o buffer e aguardar o usuário pressionar ENTER
+void limpar_buffer();
 
 #endif // Fim do cabeçalho

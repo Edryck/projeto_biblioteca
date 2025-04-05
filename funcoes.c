@@ -45,12 +45,15 @@ int menu_entrada(struct cadastro info[], struct livro info_livro[], int usuarios
                 menu_login(info, info_livro, usuarios, livros);
                 break;
             case 2:
+                getchar();
                 printf("Saindo...\n");
                 getchar();
-                return 0;
+                exit(0);
+                break;
             default:
                 printf("Opção inválida!\n");
-                system("cls");
+                limpar_buffer();
+                break;
         } 
     } while (opcao != 2);
 }
@@ -73,7 +76,6 @@ void menu_login(struct cadastro info[], struct livro info_livro[], int usuarios,
     printf("-----------------------------------------\n");
     printf("Digite o nome de usuario: ");
     scanf("%s", login);
-    printf("                                         \n");
     //Se for o administrador pede a senha
     if (strcmp(login, "admin") == 0){
         printf("Digite a senha: ");
@@ -82,19 +84,14 @@ void menu_login(struct cadastro info[], struct livro info_livro[], int usuarios,
         if (strcmp(senha, "admin") == 0){
             system("cls");
             printf("Login efetuado com sucesso!\n");
-            printf("Tecle ENTER para continuar...");
             getchar();
-            system("cls");
+            limpar_buffer();
             menu_admin(info, info_livro, usuarios, livros);
         // Se não for a senha correta, volta para o menu de login
         } else {
             printf("Senha incorreta!\n");
             printf("Voce sera redirecionado para o menu de login!\n");
-            getchar();
-            printf("Tecle ENTER para continuar...");
-            getchar();
-            system("cls");
-            menu_login(info, info_livro, usuarios, livros);
+            limpar_buffer();
         } 
     } else {
             // Procura o usuario digitado pelo vetor
@@ -107,10 +104,7 @@ void menu_login(struct cadastro info[], struct livro info_livro[], int usuarios,
                     if (strcmp(info[i].senha, senha) == 0) {
                         printf("Login efetuado com sucesso!\n");
                         getchar();
-                        printf("Tecle ENTER para continuar...");
-                        getchar();
-                        system("cls");
-                        printf("Bem-vindo, %s!\n", info[i].usuario);
+                        limpar_buffer();
                         indice_usuario = i;
                         menu_usuario(info, info_livro, usuarios, livros, indice_usuario);
                         break;
@@ -118,9 +112,7 @@ void menu_login(struct cadastro info[], struct livro info_livro[], int usuarios,
                     } else {
                         printf("Senha incorreta!\n");
                         printf("Voce sera redirecionado para o menu de login!");
-                        printf("Tecle ENTER para continuar...");
-                        getchar();
-                        system("cls");
+                        limpar_buffer();
                     }
                 }
             }
@@ -130,11 +122,7 @@ void menu_login(struct cadastro info[], struct livro info_livro[], int usuarios,
             printf("-----------------------------------------\n");
             printf("Em caso de nao ter cadastro no sistema\n    entre em contato com o administrador\npara realizar seu cadastro.\n");
             printf("-----------------------------------------\n");
-            getchar();
-            printf("Tecle ENTER para voltar a Tela de Inicio...");
-            getchar();
-            system("cls");
-            menu_entrada(info, info_livro, usuarios, livros);
+            limpar_buffer();
             }
     }
 }
@@ -153,6 +141,9 @@ void menu_admin(struct cadastro info[], struct livro info_livro[], int usuarios,
         printf("          MENU DO ADMINISTRADOR          \n");
         printf("                                         \n");
         printf("-----------------------------------------\n");
+        printf("Bem vindo, admin!\n");
+        printf("                                         \n");
+        printf("O que deseja fazer?\n");
         printf("1 - Cadastrar Usuario\n");
         printf("2 - Cadastrar Livro\n");
         printf("3 - Lista de Usuarios\n");
@@ -166,12 +157,12 @@ void menu_admin(struct cadastro info[], struct livro info_livro[], int usuarios,
         printf("Digite a opcao desejada: ");
         scanf("%d", &opcao);
         switch (opcao) {
-            case 1: // check
+            case 1: // em andamento
                 cadastrar_usuario(info, info_livro, usuarios, livros);
                 usuarios++;
                 system("cls");
                 break;
-            case 2: // check
+            case 2: // em andamento
                 cadastrar_livro(info, info_livro, usuarios, livros);
                 livros++;
                 system("cls");
@@ -199,6 +190,8 @@ void menu_admin(struct cadastro info[], struct livro info_livro[], int usuarios,
                 break;
             default:
                 printf("Opção inválida!\n");
+                limpar_buffer();
+                break;
         }
     } while (opcao != 9);
 }
@@ -217,6 +210,9 @@ void menu_usuario(struct cadastro info[], struct livro info_livro[], int usuario
         printf("             MENU DO USUARIO             \n");
         printf("                                         \n");
         printf("-----------------------------------------\n");
+        printf("Bem vindo, %s!\n", info[indice_usuario].usuario);
+        printf("                                         \n");
+        printf("O que deseja fazer?\n");
         printf("1 - Mostrar o catalogo de livros\n");
         printf("2 - Pesquisar livros\n");
         printf("3 - Emprestar livro\n");
@@ -243,10 +239,8 @@ void menu_usuario(struct cadastro info[], struct livro info_livro[], int usuario
                 break;
             default:
                 printf("Opcao invalida!\n");
-                getchar();
-                printf("Tecle ENTER para continuar...");
-                getchar();
-                system("cls");
+                limpar_buffer();
+                break;
         }
     } while (opcao != 5);
 }
@@ -266,10 +260,12 @@ void cadastrar_usuario(struct cadastro info[], struct livro info_livro[], int us
     printf("                                         \n");
     printf("-----------------------------------------\n");
     // Confere se o nome do usuário já existe
-    printf("Deseja cadastrar um novo usuario ou reativar\num usuario inativo?\nDigite: [1] para cadastrar\n\t[2] para reativar\n");
-    char opcao;
-    scanf(" %c", &opcao);
-    if (opcao == '1') {
+    printf("Deseja cadastrar um novo usuario ou reativar\num usuario inativo?\n1 - para cadastrar\n2 - para reativar\n");
+    printf("-----------------------------------------\n");
+    printf("Digite a opcao desejada: ");
+    int opcao = 0;
+    scanf(" %d", &opcao);
+    if (opcao == 1) {
         do {
             usuario_existe = 0; // Assume que o usuário não existe
             printf("Digite o seu nome de usuario:\n ");
@@ -304,30 +300,33 @@ void cadastrar_usuario(struct cadastro info[], struct livro info_livro[], int us
         printf("Senha: %s \n", info[usuarios - 1].senha);
         printf("Status atual: %s \n", info[usuarios - 1].status);
         printf("-----------------------------------------\n");
-        getchar();
-        printf("\nTecle ENTER para voltar ao menu principal...");
-        getchar();
-        system("cls");
-        menu_admin(info, info_livro, usuarios, livros);
-    } else if (opcao == '2') {
+        limpar_buffer();
+    } else if (opcao == 2) {
         printf("Digite o nome do usuario que deseja\nreativar: ");
-        scanf("%s", novo_usuario);
+        char ativar[45];
+        scanf("%s", &ativar);
+        int encontrado = 0;
         for (int i = 0; i < usuarios; i++) {
-            if (strcmp(info[i].usuario, novo_usuario) == 0 && strcmp(info[i].status, "Inativo") == 0) {
+            // Verifica se o nome do usuário informado é igual ao nome do usuário cadastrado
+            // e se o status do usuário é "Inativo"
+            if (strcmp(info[i].usuario, ativar) == 0 && strcmp(info[i].status, "Inativo") == 0) {
+                // Reativa o usuário
                 strcpy(info[i].status, "Ativo");
                 printf("Usuario  reativado com sucesso!\n");
-                getchar();
-                printf("Tecle ENTER para voltar ao menu principal...");
-                getchar();
-                system("cls");
+                encontrado = 1;
+                break;
+            } 
+            if (!encontrado) {
+                printf("Usuario nao encontrado ou ja ativo!\n");
             }
         }
-    } else {
-        printf("Opcao invalida!\n");
         getchar();
         printf("Tecle ENTER para voltar ao menu principal...");
         getchar();
         system("cls");
+    } else {
+        printf("Opcao invalida!\n");
+        limpar_buffer();
     }
 }
 
@@ -345,60 +344,96 @@ void cadastrar_livro(struct cadastro info[], struct livro info_livro[], int usua
     printf("-----------------------------------------\n");
     char novo_livro[45];
     int livro_existe;
-    do {
-        livro_existe = 0; // Assume que o livro não existe
-        printf("Digite o codigo do livro:\n ");
-        scanf("%s", novo_livro);
-        // Verifica se o Codigo do livro já existe
+    // Verifica se o livro já existe
+    printf("Deseja cadastrar um novo livro ou\nreativar um livro inativo?\n1 - para cadastrar\n2 - para reativaar\n");
+    printf("-----------------------------------------\n");
+    printf("Digite a opcao desejada: ");
+    int opcao = 0;
+    scanf(" %d", &opcao);
+    if (opcao == 1) {
+        do {
+            livro_existe = 0; // Assume que o livro não existe
+            printf("Digite o codigo do livro:\n ");
+            scanf("%s", novo_livro);
+            // Verifica se o Codigo do livro já existe
+            for (int i = 0; i < livros; i++) {
+                if (strcmp(info_livro[i].codigo, novo_livro) == 0) {
+                    livro_existe = 1; // Livro já existe
+                    break;
+                }
+            } 
+            if (livro_existe) {
+                printf("Livro ja cadastrado!\n");
+            }
+        } while (livro_existe);
+        strcpy(info_livro[livros].codigo, novo_livro);
+        char titulo[75];
+        do {
+            livro_existe = 0; // Inicia como livro inexistente
+            // Adiciona titulo do livro
+            printf("Digite o titulo do livro:\n ");
+            scanf("%s", titulo);
+            // Verifica se o titulo do livro já existe
+            for (int i = 0; i < livros; i++) {
+                if (strcmp(info_livro[livros].titulo, titulo) == 0) {
+                    livro_existe = 1; // Livro já existe
+                    break;
+                }
+            }
+            if (livro_existe) {
+                printf("Livro ja cadastrado!\n");
+            }
+        } while (livro_existe);
+        strcpy(info_livro[livros].titulo, titulo);
+        // Adiciona o nome do autor
+        printf("Digite o nome do autor:\n ");
+        scanf("%s", info_livro[livros].autor);
+        // Adiciona o número de páginas
+        printf("Digite o numero de paginas:\n ");
+        scanf("%s", info_livro[livros].paginas);
+        // Marca o livro como "Disponível"
+        info_livro[livros].disponivel = 1; // Livro disponível
+        info_livro[livros].emprestado = 0; // Livro não emprestado
+        // Define o status do livro como "Disponível"
+        strcpy(info_livro[livros].status, "Disponivel");
+        // Incrementa a quantidade de livros cadastrados
+        livros++;
+
+        printf("-----------------------------------------\n");
+        printf("Livro cadastrado com sucesso!\n");
+        printf("        Informacoes do livro\n\n");
+        printf("Codigo: %s\n", info_livro[livros - 1].codigo);
+        printf("Titulo: %s\n", info_livro[livros - 1].titulo);
+        printf("Autor: %s\n", info_livro[livros - 1].autor);
+        printf("Paginas: %s\n", info_livro[livros - 1].paginas);
+        printf("-----------------------------------------\n");
+        limpar_buffer();
+    } else if (opcao == 2) {
+        printf("Digite o codigo do livro que deseja\nreativar: ");
+        char ativar[5];
+        scanf("%s", &ativar);
+        int encontrado = 0;
         for (int i = 0; i < livros; i++) {
-            if (strcmp(info_livro[i].codigo, novo_livro) == 0) {
-                livro_existe = 1; // Livro já existe
+            // Verifica se o código informado e o códido do livro são iguais
+            // e se o status do livro é "Indisponivel"
+            if (strcmp(info_livro[livros].codigo, ativar) == 0 && strcmp(info_livro[livros].status, "Indisponivel") == 0) {
+                // Reativa o livro
+                info_livro[livros].disponivel = 1;
+                info_livro[livros].emprestado = 0;
+                strcpy(info_livro[livros].status, "Disponivel");
+                printf("Livro reativado com sucesso!\n"); 
+                encontrado = 1;
                 break;
             }
-        } if (livro_existe) {
-            printf("Livro ja cadastrado!\n");
         }
-    } while (livro_existe);
-    strcpy(info_livro[livros].codigo, novo_livro);
-    char titulo[75];
-    do {
-        livro_existe = 0; // Inicia como livro inexistente
-        // Adiciona titulo do livro
-        printf("Digite o titulo do livro:\n ");
-        scanf("%s", titulo);
-        // Verifica se o titulo do livro já existe
-        for (int i = 0; i < livros; i++) {
-            if (strcmp(info_livro[livros].titulo, novo_livro) == 0) {
-                livro_existe = 1; // Livro já existe
-                break;
-            }
+        if (!encontrado) {
+            printf("Livro nao encontrado ou ja ativo!\n");
         }
-        if (livro_existe) {
-            printf("Livro ja cadastrado!\n");
-        }
-    } while (livro_existe);
-    strcpy(info_livro[livros].titulo, titulo);
-    // Adiciona o nome do autor
-    printf("Digite o nome do autor:\n ");
-    scanf("%s", info_livro[livros].autor);
-    // Adiciona o número de páginas
-    printf("Digite o numero de paginas:\n ");
-    scanf("%s", info_livro[livros].paginas);
-    // Incrementa a quantidade de livros cadastrados
-    livros++;
-    printf("-----------------------------------------\n");
-    printf("Livro cadastrado com sucesso!\n");
-    printf("        Informacoes do livro\n\n");
-    printf("Codigo: %s\n", info_livro[livros - 1].codigo);
-    printf("Titulo: %s\n", info_livro[livros - 1].titulo);
-    printf("Autor: %s\n", info_livro[livros - 1].autor);
-    printf("Paginas: %s\n", info_livro[livros - 1].paginas);
-    printf("-----------------------------------------\n");
-    getchar();
-    printf("Tecle ENTER para voltar ao menu anterior...");
-    getchar();
-    system("cls");
-    menu_admin(info, info_livro, usuarios, livros);
+        limpar_buffer();
+    } else {
+        printf("Opcao invalida!\n");
+        limpar_buffer();
+    }
 }
 
 // Função para listar usuários
@@ -414,16 +449,13 @@ void listar_usuarios(struct cadastro info[], struct livro info_livro[], int usua
     printf("                                         \n");
     printf("-----------------------------------------\n");
     for (int i = 0; i < usuarios; i++) {
-        printf("Usuário: %s\n", info[i].usuario);
+        printf("Usuario: %s\n", info[i].usuario);
         printf("Senha: %s\n", info[i].senha);
         printf("Status: %s\n", info[i].status);
         printf("-----------------------------------------\n");
     }
-    printf("Total de Usuario cadastrados: %d\n", usuarios);
-    getchar();
-    printf("Tecle ENTER para volta ao menu anterior...");
-    getchar();
-    menu_admin(info, info_livro, usuarios, livros);
+    printf("Total de Usuarios cadastrados: %d\n", usuarios);
+    limpar_buffer();
 }
 
 // Função para listar os livros emprestados pelo usuário e exibir o usuario que pegou
@@ -456,11 +488,7 @@ void listar_livros_emprestados(struct cadastro info[], struct livro info_livro[]
     if (livros_emprestados == 0) {
         printf("Nao ha livros emprestados!\n");
     }
-    getchar();
-    printf("Tecle ENTER para voltar ao menu inicial...");
-    getchar();
-    system("cls");
-    menu_admin(info, info_livro, usuarios, livros);
+    limpar_buffer();
 }
 
 // Função para excluir usuários
@@ -482,27 +510,28 @@ void excluir_usuario(struct cadastro info[], int usuarios) {
     for (int i = 0; i < usuarios; i++) {
         if (strcmp(usuario, "admin") == 0) {
             printf("Nao e possivel excluir o usuario admin!\n");
-            printf("Tecle ENTER para voltar ao menu inicial...");
-            getchar();
-            getchar();
+            limpar_buffer();
             break;
         } else if (strcmp(info[i].usuario, usuario) == 0 && strcmp(info[i].usuario, "") != 0) {
+            // Verifica se o usuário tem livros emprestados
+            if (strcmp(info[i].livros_emprestados[0], "") != 0) {
+                printf("O usuario %s tem livros emprestados!\n", info[i].usuario);
+                printf("Nao e possivel excluir o usuario");
+                limpar_buffer();
+                break;
+            }
             printf("Confirma a exclusao do usuario %s? (S/N): ", info[i].usuario);
             char confirmacao;
             scanf(" %c", &confirmacao);
             if (confirmacao == 'S' || confirmacao == 's') {
                 usuario_encontrado = 1;
                 strcpy(info[i].status, "Inativo");
-                getchar();
                 printf("Usuario excluido com sucesso!\n");
-                getchar();
-                printf("Tecle ENTER para voltar ao menu inicial...");
+                limpar_buffer();
                 break;
             } else {
                 printf("Exclusao cancelada!\n");
-                printf("Tecle ENTER para voltar ao menu inicial...");
-                getchar();
-                getchar();
+                limpar_buffer();
                 break;
             }
             
@@ -535,10 +564,7 @@ void excluir_livro(struct livro info_livro[], int livros) {
             strcpy(info_livro[i].status, "Indisponivel");
             printf("-----------------------------------------\n");
             printf("Livro excluido com sucesso!\n");
-            getchar();
-            printf("Tecle ENTER para voltar ao menu inicial...");
-            getchar();
-            system("cls");
+            limpar_buffer();
             break;
         }
     }
@@ -601,6 +627,7 @@ void catalogo_livros_admin(struct cadastro info[], struct livro info_livro[], in
                 break;
             default:
                 printf("Digito invalido!\n");
+                limpar_buffer();
                 break;
         }
     } while (opcao != 5);
@@ -660,6 +687,7 @@ void catalogo_livros(struct cadastro info[], struct livro info_livro[], int usua
                 break;
             default:
                 printf("Digito invalido!\n");
+                limpar_buffer();
                 break;
         }
     } while (opcao != 5);
@@ -716,10 +744,7 @@ void pesquisa_livros(struct cadastro info[], struct livro info_livro[], int usua
                 break;
             default:
                 printf("Digito invalido\n");
-                getchar();
-                printf("Tecle ENTER para continuar...");
-                getchar();
-                system("cls");
+                limpar_buffer();
                 break;
         }
     } while (opcao != 3);
@@ -782,12 +807,9 @@ void pesquisa_livros_usuario(struct cadastro info[], struct livro info_livro[], 
             menu_usuario(info, info_livro, usuarios, livros, indice_usuario);
             break;
         default:
-        printf("Digito invalido");
-        getchar();
-        printf("Tecle ENTER para continuar...");
-        getchar();
-        system("cls");
-        return;
+            printf("Digito invalido");
+            limpar_buffer();
+            break;
     }
 }
 
@@ -911,34 +933,18 @@ void emprestar_livro(struct cadastro info[], struct livro info_livro[], int usua
                 printf("\nLivro emprestado com sucesso!\n");
                 printf("Data de Emprestimo: %s\n", info_livro[i].data_emprestimo);
                 printf("Data de Devolucao: %s\n", info_livro[i].data_devolucao);
-                // Aguarda o usuário pressionar ENTER e retorna ao menu
-                getchar();
-                printf("\nTecle ENTER para voltar para o menu inicial...");
-                getchar();
-                system("cls");
-                menu_usuario(info, info_livro, usuarios, livros, indice_usuario);
-                return;
+                limpar_buffer();
             } else {
                 printf("-----------------------------------------\n");
                 printf("\nLivro indisponivel!\n");
-                // Aguarda o usuário pressionar ENTER e retorna ao menu
-                getchar();
-                printf("\nTecle ENTER para voltar para o menu inicial...");
-                getchar();
-                system("cls");
-                menu_usuario(info, info_livro, usuarios, livros, indice_usuario);
-                return;
+                limpar_buffer();
             }
         }
     }
     // Se nenhum livro foi encontrado com o código informado
     printf("-----------------------------------------\n");
     printf("\nLivro nao encontrado!\n");
-    getchar(); // Consome o ENTER
-    printf("\nTecle ENTER para voltar para o menu inicial...");
-    getchar();
-    system("cls");
-    menu_usuario(info, info_livro, usuarios, livros, indice_usuario);
+    limpar_buffer();
 }
 
 // Função para devolver um livro
@@ -980,10 +986,7 @@ void devolver_livro(struct cadastro info[], struct livro info_livro[], int usuar
                 menu_usuario(info, info_livro, usuarios, livros, indice_usuario);
             } else {
                 printf("Livro nao foi emprestado por voce!\n");
-                printf("Tecle ENTER para voltar para o menu inicial...");
-                getchar();
-                system("cls");
-                menu_usuario(info, info_livro, usuarios, livros, indice_usuario);
+                limpar_buffer();
             }
             livro_emprestado = 1;
             break;
@@ -996,4 +999,11 @@ void devolver_livro(struct cadastro info[], struct livro info_livro[], int usuar
         system("cls");
         menu_usuario(info, info_livro, usuarios, livros, indice_usuario);
     }
+}
+
+// Função para limpar o buffer do teclado e voltar ao menu inicial
+void limpar_buffer() {
+    while (getchar() != '\n'); // Limpa o buffer do teclado
+    printf("Tecle ENTER para continuar...");
+    getchar(); // Aguarde o usuário pressionar ENTER 
 }
